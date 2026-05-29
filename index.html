@@ -1,269 +1,766 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>CHC Notebook</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulsos · PG001 · IFC-CHC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 :root{
---bg:#f5f7f6;
---sidebar:#ffffff;
---line:#dce5de;
---text:#17211b;
---muted:#6a766e;
---green:#176846;
+  --verde:#1c6b4a;--verde-claro:#e8f4ef;--verde-medio:#2d8a62;
+  --verde-borde:#b8dccc;--papel:#fafaf7;--ink:#111111;
+  --ink-suave:#4a4a44;--ink-gris:#8a8a80;--blanco:#ffffff;
+  --F:#1c6b4a;--O:#2d5a8a;--R:#8a4a2d;--A:#6b4a1c;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--papel);color:var(--ink);min-height:100vh;overflow-x:hidden;}
 
-html,
-body{
-width:100%;
-height:100%;
-overflow:hidden;
-font-family:'Inter',sans-serif;
-background:var(--bg);
-color:var(--text);
+.pantalla{display:none;flex-direction:column;min-height:100vh;}
+.pantalla.activa{display:flex;}
+
+/* PORTADA */
+#p-portada{align-items:center;justify-content:center;background:linear-gradient(160deg,#0f4a32 0%,#1c6b4a 50%,#2d8a62 100%);padding:48px 24px;position:relative;overflow:hidden;}
+#p-portada::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;border:1px solid rgba(255,255,255,.06);top:-200px;right:-200px;}
+#p-portada::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;border:1px solid rgba(255,255,255,.04);bottom:-150px;left:-150px;}
+.portada-inner{max-width:520px;text-align:center;position:relative;z-index:2;}
+.portada-eyebrow{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:20px;}
+.portada-titulo{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(3.5rem,10vw,6rem);font-weight:400;color:white;line-height:1;letter-spacing:-.02em;margin-bottom:16px;}
+.portada-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:40px;line-height:1.65;max-width:380px;margin-left:auto;margin-right:auto;}
+.portada-ejes{display:flex;justify-content:center;gap:10px;margin-bottom:40px;flex-wrap:wrap;}
+.eje-pill{display:flex;align-items:center;gap:8px;padding:7px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:100px;}
+.eje-letra{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:white;line-height:1;}
+.eje-nombre{font-size:11px;color:rgba(255,255,255,.65);}
+.portada-meta{display:flex;justify-content:center;gap:32px;margin-bottom:44px;flex-wrap:wrap;}
+.meta-item{text-align:center;}
+.meta-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;color:white;line-height:1;}
+.meta-label{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.btn-iniciar{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:14px 36px;background:white;color:#0f4a32;border:none;border-radius:100px;cursor:pointer;letter-spacing:.04em;transition:all .2s;}
+.btn-iniciar:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+
+/* CASOS */
+#p-casos{background:var(--papel);}
+.casos-header{background:white;border-bottom:1px solid var(--verde-borde);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.casos-logo{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--verde);opacity:.75;}
+.prog-wrap{display:flex;align-items:center;gap:10px;}
+.prog-barra{width:120px;height:2px;background:#e8e5dc;border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--verde);border-radius:2px;transition:width .4s ease;}
+.prog-txt{font-size:11px;color:var(--ink-gris);font-weight:500;white-space:nowrap;}
+.casos-body{padding:32px 24px 48px;max-width:620px;margin:0 auto;}
+
+/* PULSO CARDS */
+.pulso-card{display:none;flex-direction:column;padding-bottom:32px;}
+.pulso-card.activo{display:flex;}
+.pulso-num{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--verde);opacity:.75;margin-bottom:8px;}
+.pulso-titulo{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,3.5vw,28px);font-weight:400;color:var(--ink);line-height:1.15;letter-spacing:-.01em;margin-bottom:14px;}
+.pulso-sit{background:white;border:1px solid #ece9e0;border-left:3px solid var(--verde-borde);border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;color:var(--ink-suave);line-height:1.7;font-weight:300;margin-bottom:18px;} .pulso-sit p{margin-bottom:10px;} .pulso-sit p:last-child{margin-bottom:0;}
+.pulso-pregunta{font-size:13px;font-weight:400;color:var(--ink-suave);margin-bottom:16px;font-style:italic;}
+.pulso-hint{font-size:11px;color:var(--ink-gris);margin-bottom:10px;font-weight:300;}
+
+/* RANKING */
+.ranking-lista{display:flex;flex-direction:column;gap:7px;}
+.ranking-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:white;border:1px solid #e8e5dc;border-radius:8px;user-select:none;transition:all .15s;font-family:'DM Sans',sans-serif;cursor:default;}
+.ranking-handle{color:#c0c0b8;font-size:18px;flex-shrink:0;cursor:grab;padding:4px 2px;touch-action:none;}
+.ranking-handle:active{cursor:grabbing;}
+.ranking-item.dragging{opacity:.5;border-color:var(--verde);background:var(--verde-claro);}
+.ranking-item.drag-over{border-color:var(--verde);border-style:dashed;}
+.ranking-pos{width:24px;height:24px;border-radius:50%;background:#f0f0e8;border:1px solid #e0ddd4;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--ink-gris);flex-shrink:0;transition:all .15s;}
+.ranking-item.pos-1 .ranking-pos{background:var(--verde);color:white;border-color:var(--verde);}
+.ranking-item.pos-2 .ranking-pos{background:#e8f4ef;color:var(--verde);border-color:var(--verde-borde);}
+.ranking-item.pos-3 .ranking-pos{background:#f5f2ea;color:#8a8a80;border-color:#e0ddd4;}
+.ranking-item.pos-4 .ranking-pos{background:#f5f2ea;color:#b0b0a8;border-color:#e8e5dc;}
+.ranking-texto{font-size:13px;color:var(--ink-suave);line-height:1.5;font-weight:300;flex:1;}
+
+
+/* VER RESULTADOS */
+
+.caso-nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0 32px;border-top:1px solid #e8e5dc;margin-top:8px;}
+.btn-nav{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:10px 22px;background:transparent;border:1px solid var(--verde-borde);border-radius:100px;cursor:pointer;color:var(--verde);transition:all .2s;min-height:40px;}
+.btn-nav:hover:not(:disabled){background:var(--verde-claro);}
+.btn-nav:disabled{color:#c0c0b8;border-color:#e8e5dc;cursor:default;}
+.caso-nav-txt{font-size:12px;color:var(--ink-gris);font-weight:500;}
+
+.ver-resultados-wrap{text-align:center;padding:40px 0 20px;border-top:1px solid #e8e5dc;margin-top:8px;}
+.ver-resultados-hint{font-size:12px;color:var(--ink-gris);font-style:italic;margin-bottom:20px;}
+.btn-ver{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:13px 36px;background:var(--verde);color:white;border:none;border-radius:100px;cursor:pointer;letter-spacing:.03em;transition:all .2s;}
+.btn-ver:hover:not(:disabled){background:var(--verde-medio);transform:translateY(-1px);}
+.btn-ver:disabled{background:#c8c4b8;color:#f0ede8;cursor:default;}
+
+/* RESULTADOS */
+#p-resultados{background:var(--papel);align-items:center;}
+.res-wrap{max-width:720px;width:100%;padding:48px 24px 80px;margin:0 auto;}
+.res-eyebrow{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--verde);margin-bottom:12px;text-align:center;}
+.res-titulo{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(28px,5vw,40px);font-weight:400;color:var(--ink);line-height:1.1;letter-spacing:-.02em;margin-bottom:8px;text-align:center;}
+.res-sub{font-size:14px;font-weight:300;color:var(--ink-gris);text-align:center;margin-bottom:44px;line-height:1.6;}
+.radar-wrap{display:flex;justify-content:center;margin-bottom:44px;}
+.dims-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px;}
+.dim-card{background:white;border:1px solid #e8e8e0;border-radius:10px;padding:18px;position:relative;overflow:hidden;}
+.dim-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.dim-card.F::before{background:var(--F);}
+.dim-card.O::before{background:var(--O);}
+.dim-card.R::before{background:var(--R);}
+.dim-card.A::before{background:var(--A);}
+.dim-head{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
+.dim-letra{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1;}
+.dim-card.F .dim-letra{color:var(--F);}
+.dim-card.O .dim-letra{color:var(--O);}
+.dim-card.R .dim-letra{color:var(--R);}
+.dim-card.A .dim-letra{color:var(--A);}
+.dim-nombre{font-size:11px;font-weight:500;color:var(--ink-suave);text-transform:uppercase;letter-spacing:.06em;}
+.dim-barra{height:4px;background:#f0f0e8;border-radius:2px;margin-bottom:5px;position:relative;}
+.dim-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.dim-card.F .dim-fill{background:var(--F);}
+.dim-card.O .dim-fill{background:var(--O);}
+.dim-card.R .dim-fill{background:var(--R);}
+.dim-card.A .dim-fill{background:var(--A);}
+.dim-media{position:absolute;top:-4px;width:2px;height:12px;background:#c0c0b0;border-radius:1px;}
+.dim-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-gris);margin-bottom:8px;}
+.dim-interp{font-size:12px;color:var(--ink-suave);line-height:1.6;font-weight:300;}
+.tensiones-bloque{background:white;border:1px solid var(--verde-borde);border-radius:10px;padding:24px;margin-bottom:24px;}
+.tensiones-titulo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:6px;}
+.tensiones-sub{font-size:12px;color:var(--ink-gris);margin-bottom:18px;font-weight:300;}
+.tension-fila{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e8e8e0;}
+.tension-fila:last-child{border-bottom:none;}
+.tension-polo{font-size:12px;font-weight:500;color:var(--ink-suave);width:90px;flex-shrink:0;}
+.tension-polo.d{text-align:right;}
+.tension-track{flex:1;height:6px;background:#f0f0e8;border-radius:3px;position:relative;}
+.tension-dot{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--verde);top:-4px;transform:translateX(-50%);box-shadow:0 2px 8px rgba(0,0,0,.15);transition:left 1s ease;}
+.tension-mid{position:absolute;left:50%;top:-3px;width:2px;height:12px;background:#c0c0b0;transform:translateX(-50%);}
+.perfil-bloque{background:white;border:1px solid var(--verde-borde);border-radius:10px;padding:24px;margin-bottom:28px;}
+.perfil-titulo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--verde);margin-bottom:10px;font-style:italic;}
+.perfil-texto{font-size:14px;color:var(--ink-suave);line-height:1.75;font-weight:300;}
+.perfil-texto strong{color:var(--ink);font-weight:500;}
+
+/* MANUAL */
+.manual-bloque{background:var(--verde-claro);border:1px solid var(--verde-borde);border-radius:10px;padding:24px;margin-bottom:32px;}
+.manual-titulo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--verde);margin-bottom:16px;}
+.manual-dim{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--verde-borde);}
+.manual-dim:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.manual-dim-nombre{font-size:12px;font-weight:500;color:var(--verde);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.manual-dim-desc{font-size:12px;color:var(--ink-suave);line-height:1.65;font-weight:300;}
+.manual-tensiones{margin-top:16px;padding-top:16px;border-top:1px solid var(--verde-borde);}
+.manual-ten-titulo{font-size:12px;font-weight:500;color:var(--verde);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.manual-ten-item{font-size:12px;color:var(--ink-suave);line-height:1.65;font-weight:300;margin-bottom:6px;}
+.manual-ten-item strong{color:var(--ink);font-weight:500;}
+
+.nota-final{font-size:12px;color:var(--ink-gris);text-align:center;font-style:italic;line-height:1.65;max-width:460px;margin:0 auto 28px;}
+.btn-reiniciar{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:10px 24px;background:transparent;color:var(--verde);border:1px solid var(--verde-borde);border-radius:100px;cursor:pointer;display:block;margin:0 auto;transition:all .2s;}
+.btn-reiniciar:hover{background:var(--verde-claro);}
+.btn-modulo{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;padding:8px 20px;background:transparent;color:var(--ink-gris);border:1px solid #e8e5dc;border-radius:100px;cursor:pointer;display:block;margin:12px auto 0;transition:all .2s;}
+.btn-modulo:hover{color:var(--verde);border-color:var(--verde-borde);}
+
+@media(max-width:600px){
+  .portada-inner{padding:0 8px;}
+  .portada-titulo{font-size:4rem;}
+  .portada-ejes{gap:8px;}
+  .eje-pill{padding:6px 12px;}
+  .casos-body{padding:20px 14px 48px;}
+  .pulso-titulo{font-size:22px;}
+  .dims-grid{grid-template-columns:1fr;}
+  .tension-polo{width:64px;font-size:11px;}
+  .btn-ver{width:100%;max-width:320px;}
+  .btn-reiniciar,.btn-modulo{width:100%;max-width:280px;}
 }
-
-body{
-display:grid;
-grid-template-columns:280px 1fr;
+@media(max-width:380px){
+  .portada-titulo{font-size:3.2rem;}
+  .eje-nombre{display:none;}
 }
-
-/* SIDEBAR */
-
-.sidebar{
-background:var(--sidebar);
-border-right:1px solid var(--line);
-padding:22px;
-display:flex;
-flex-direction:column;
-gap:24px;
-overflow-y:auto;
-}
-
-.logo{
-font-size:34px;
-}
-
-.title{
-font-size:30px;
-font-weight:800;
-line-height:1;
-color:#114730;
-}
-
-.subtitle{
-font-size:13px;
-line-height:1.7;
-color:var(--muted);
-margin-top:-10px;
-}
-
-.section-title{
-font-size:11px;
-font-weight:800;
-letter-spacing:.12em;
-text-transform:uppercase;
-color:#7a877e;
-margin-bottom:12px;
-}
-
-.group{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-
-.item{
-padding:14px;
-border-radius:16px;
-border:1px solid transparent;
-cursor:pointer;
-transition:.15s ease;
-background:white;
-}
-
-.item:hover{
-background:#f7faf8;
-border-color:#d8e6dd;
-}
-
-.item.active{
-background:#edf7f1;
-border-color:#b9d8c6;
-}
-
-.item-title{
-font-size:14px;
-font-weight:700;
-margin-bottom:4px;
-}
-
-.item-desc{
-font-size:12px;
-line-height:1.6;
-color:var(--muted);
-}
-
-/* VIEWER */
-
-.viewer{
-width:100%;
-height:100vh;
-background:white;
-}
-
-iframe{
-width:100%;
-height:100%;
-border:none;
-background:white;
-}
-
-/* MOBILE */
-
-@media(max-width:1000px){
-
-body{
-grid-template-columns:1fr;
-}
-
-.sidebar{
-height:auto;
-border-right:none;
-border-bottom:1px solid var(--line);
-}
-
-.viewer{
-height:calc(100vh - 420px);
-}
-
-}
-
 </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
+<!-- PORTADA -->
+<section class="pantalla activa" id="p-portada">
+  <div class="portada-inner">
+    <div class="portada-eyebrow">IFC · CHC · PG001</div>
+    <h1 class="portada-titulo">Pulsos</h1>
+    <p class="portada-sub">Diez situaciones de liderazgo. Ordená las respuestas según lo que te preocupa primero — no hay respuestas correctas, hay formas distintas de leer.</p>
+    <div class="portada-ejes">
+      <div class="eje-pill"><span class="eje-letra">F</span><span class="eje-nombre">Formativo</span></div>
+      <div class="eje-pill"><span class="eje-letra">O</span><span class="eje-nombre">Organizacional</span></div>
+      <div class="eje-pill"><span class="eje-letra">R</span><span class="eje-nombre">Relacional</span></div>
+      <div class="eje-pill"><span class="eje-letra">A</span><span class="eje-nombre">Adaptativo</span></div>
+    </div>
+    <div class="portada-meta">
+      <div class="meta-item"><div class="meta-num">10</div><div class="meta-label">casos</div></div>
+      <div class="meta-item"><div class="meta-num">~15</div><div class="meta-label">minutos</div></div>
+      <div class="meta-item"><div class="meta-num">4</div><div class="meta-label">dimensiones</div></div>
+    </div>
+    <button class="btn-iniciar" id="btn-iniciar">Comenzar →</button>
+  </div>
+</section>
 
-<aside class="sidebar">
+<!-- CASOS -->
+<section class="pantalla" id="p-casos">
+  <div class="casos-header">
+    <div class="casos-logo">Pulsos</div>
+    <div class="prog-wrap">
+      <div class="prog-barra"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <span class="prog-txt" id="prog-txt">0 de 10</span>
+    </div>
+  </div>
 
-<div class="logo">
-🧠
-</div>
+  <div class="casos-body">
 
-<div class="title">
-CHC Notebook
-</div>
+    <!-- CASO 1 -->
+    <div class="pulso-card" data-caso="1">
+      <div class="pulso-num">Caso 01 · Iniciativa</div>
+      <h2 class="pulso-titulo">Cuando los afiliados/as se te acercan</h2>
+      <div class="pulso-sit"><p>Llegás como delegado/a a una actividad de tu cooperativa. La actividad debía comenzar hace casi una hora, pero todavía hay personas haciendo fila porque nadie está coordinando el registro. Algunos afiliados/as preguntan cuándo iniciará el programa, otros se muestran molestos porque viajaron desde comunidades lejanas y nadie les da información clara. Además, varias de las personas responsables de la organización aún no aparecen.</p><p>Al verte llegar, varios afiliados/as se acercan esperando que hagás algo.</p></div>
+      <div class="pulso-pregunta">¿Cuál sería tu primer impulso?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="1">
+        <div class="ranking-item pos-1" data-eje="R"><span class="ranking-pos">1</span><span class="ranking-texto">Acercarme a las personas para escuchar qué está pasando desde su perspectiva y comprender qué necesitan en este momento.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="O"><span class="ranking-pos">2</span><span class="ranking-texto">Buscar a quienes estaban a cargo de la actividad para coordinar una respuesta rápida y reorganizar lo que todavía pueda corregirse.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="F"><span class="ranking-pos">3</span><span class="ranking-texto">Intentar entender qué falló en la planificación o en la coordinación para que la situación haya llegado a este punto.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="A"><span class="ranking-pos">4</span><span class="ranking-texto">Tomar la iniciativa de inmediato y empezar a resolver los problemas más urgentes, aunque aún no tenga toda la información.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div class="subtitle">
-Sistema modular de aprendizaje cooperativo.
-</div>
+    <!-- CASO 2 -->
+    <div class="pulso-card" data-caso="2">
+      <div class="pulso-num">Caso 02 · Gobernanza</div>
+      <h2 class="pulso-titulo">La decisión que no esperó</h2>
+      <div class="pulso-sit"><p>Durante una sesión de Junta Directiva, la presidencia informa sobre una decisión tomada semanas atrás a solicitud de la gerencia.</p><p>La cooperativa había recibido una alerta sobre posibles vulnerabilidades en su sistema tecnológico. El informe recomendaba una evaluación especializada con carácter urgente para reducir riesgos operativos y regulatorios. El costo de la consultoría superaba el nivel de autorización habitual de la gerencia y, por su naturaleza, habría requerido conocimiento de la Junta Directiva e incluso coordinación con la Junta de Vigilancia.</p><p>Como la siguiente sesión ordinaria estaba programada para varias semanas después y el riesgo debía atenderse de inmediato, la gerencia presentó la situación a la presidencia de la JD, quien autorizó proceder. La consultoría se realizó, los hallazgos fueron atendidos y la cooperativa no sufrió incidentes.</p></div>
+      <div class="pulso-pregunta">Al conocer lo ocurrido, ¿qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="2">
+        <div class="ranking-item pos-1" data-eje="O"><span class="ranking-pos">1</span><span class="ranking-texto">Que la cooperativa no cuente con mecanismos claros para responder a situaciones urgentes entre sesiones de los cuerpos directivos.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="A"><span class="ranking-pos">2</span><span class="ranking-texto">Que una excepción que funcionó bien termine convirtiéndose en una práctica habitual dentro de la organización.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="F"><span class="ranking-pos">3</span><span class="ranking-texto">Que una decisión de esta relevancia no haya sido conocida oportunamente por todos los órganos que debían involucrarse.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="R"><span class="ranking-pos">4</span><span class="ranking-texto">Que una situación urgente haya llevado a reemplazar una decisión colegiada por la autorización de una sola persona.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<!-- LEGAL -->
+    <!-- CASO 3 -->
+    <div class="pulso-card" data-caso="3">
+      <div class="pulso-num">Caso 03 · Permanencia</div>
+      <h2 class="pulso-titulo">El que sabe lo que no está escrito</h2>
+      <div class="pulso-sit"><p>Un directivo lleva siete años consecutivos en su cargo. Conoce la historia detrás de casi todas las decisiones importantes, recuerda acuerdos tomados años atrás y suele ser la persona a quien todos consultan cuando surge una duda. En las reuniones, su opinión termina inclinando muchas decisiones porque maneja información que pocas personas más conocen.</p><p>Con el tiempo, los directivos más nuevos han dejado de cuestionar, proponer o debatir ideas con la misma frecuencia.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="3">
+        <div class="ranking-item pos-1" data-eje="A"><span class="ranking-pos">1</span><span class="ranking-texto">Que la cooperativa se vuelva más vulnerable de lo que parece si esa persona deja de participar.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="R"><span class="ranking-pos">2</span><span class="ranking-texto">Que los directivos más nuevos hayan dejado de sentirse con espacio real para aportar criterios distintos.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="F"><span class="ranking-pos">3</span><span class="ranking-texto">Que la cooperativa no esté preparando a otras personas para asumir responsabilidades similares en el futuro.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="O"><span class="ranking-pos">4</span><span class="ranking-texto">Que gran parte del conocimiento clave dependa de una sola persona en lugar de estar documentado y accesible.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div>
+    <!-- CASO 4 -->
+    <div class="pulso-card" data-caso="4">
+      <div class="pulso-num">Caso 04 · Coordinación</div>
+      <h2 class="pulso-titulo">Lo que no llega a los sectores</h2>
+      <div class="pulso-sit"><p>Durante el año, el Comité de Educación organizó varias actividades formativas. Algunos sectores recibieron invitaciones con poca anticipación, otros terminaron recibiendo la misma información por distintos canales y hubo comunidades que no participaron porque nunca se enteraron de las actividades. En una capacitación reciente, la jornada tuvo que comenzar con retraso porque varios aspectos logísticos no habían sido coordinados entre los equipos responsables.</p></div>
+      <div class="pulso-pregunta">Al revisar la situación, ¿qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="4">
+        <div class="ranking-item pos-1" data-eje="O"><span class="ranking-pos">1</span><span class="ranking-texto">Que la información y las responsabilidades dependan demasiado de esfuerzos individuales en lugar de un sistema compartido.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="A"><span class="ranking-pos">2</span><span class="ranking-texto">Que estos problemas se hayan vuelto tan habituales que ya nadie los considere prioritarios.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="R"><span class="ranking-pos">3</span><span class="ranking-texto">Que algunos afiliados/as terminen sintiendo que tienen menos oportunidades de participar que otros.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="F"><span class="ranking-pos">4</span><span class="ranking-texto">Que el Comité esté perdiendo capacidad para llevar sus actividades a todos los sectores de manera consistente.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div class="section-title">
-Legal
-</div>
+    <!-- CASO 5 -->
+    <div class="pulso-card" data-caso="5">
+      <div class="pulso-num">Caso 05 · Rendición de cuentas</div>
+      <h2 class="pulso-titulo">La JV que lleva la cuenta</h2>
+      <div class="pulso-sit"><p>La Junta de Vigilancia ha observado durante varios meses el avance del POA. En las sesiones de Junta Directiva se revisan los acuerdos pendientes, se discuten los retrasos y se asignan responsables para completar las tareas. Sin embargo, al mes siguiente muchas actividades siguen sin ejecutarse. Las explicaciones suelen ser razonables y los compromisos se renuevan, pero el patrón vuelve a repetirse.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="5">
+        <div class="ranking-item pos-1" data-eje="R"><span class="ranking-pos">1</span><span class="ranking-texto">Que asumir una responsabilidad y no cumplirla parezca tener pocas consecuencias reales.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="F"><span class="ranking-pos">2</span><span class="ranking-texto">Que los acuerdos de la JD no estén traduciéndose en acciones concretas.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="A"><span class="ranking-pos">3</span><span class="ranking-texto">Que el incumplimiento recurrente se haya vuelto una práctica aceptada dentro del funcionamiento normal de la JD.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="O"><span class="ranking-pos">4</span><span class="ranking-texto">Que la JD esté dedicando más energía a responder urgencias que a ejecutar los objetivos que ella misma definió.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div class="group">
+    <!-- CASO 6 -->
+    <div class="pulso-card" data-caso="6">
+      <div class="pulso-num">Caso 06 · Confianza</div>
+      <h2 class="pulso-titulo">Cuando ya no parece un error aislado</h2>
+      <div class="pulso-sit"><p>Durante una revisión interna, sale a la luz que un miembro de la Junta Directiva actuó de forma distinta a lo acordado por el órgano en una decisión reciente. Al ser consultado, explica sus razones y sostiene que actuó pensando en el beneficio de la cooperativa.</p><p>Sin embargo, varios directivos señalan que no es la primera vez que toma iniciativas por su cuenta o interpreta los acuerdos con mayor flexibilidad de la que el resto considera apropiada. Aunque la situación puede corregirse, la discusión comienza a girar menos alrededor del hecho puntual y más alrededor de la confianza.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="6">
+        <div class="ranking-item pos-1" data-eje="A"><span class="ranking-pos">1</span><span class="ranking-texto">Que el foco termine puesto únicamente en esta persona y no en las condiciones institucionales que permitieron que la situación se repitiera.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="O"><span class="ranking-pos">2</span><span class="ranking-texto">Que no exista claridad sobre cómo actuar cuando un directivo se aparta reiteradamente de lo acordado por el órgano.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="R"><span class="ranking-pos">3</span><span class="ranking-texto">Que los demás miembros de la JD empiecen a perder confianza en que los acuerdos realmente serán respetados una vez que se toman.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="F"><span class="ranking-pos">4</span><span class="ranking-texto">Que se esté tolerando un patrón de comportamiento que poco a poco empuja los límites de lo que la cooperativa considera aceptable.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div
-class="item active"
-onclick="loadArtifact('artifacts/legal/legal-workspace-v2.html', this)"
->
+    <!-- CASO 7 -->
+    <div class="pulso-card" data-caso="7">
+      <div class="pulso-num">Caso 07 · Educación</div>
+      <h2 class="pulso-titulo">Cuando la gente no llega</h2>
+      <div class="pulso-sit"><p>La vicepresidenta de la Junta Directiva coordina el Comité de Educación y da seguimiento a las actividades contempladas en el POA. La cooperativa opera dentro de una empresa y las actividades formativas suelen realizarse fuera de la jornada laboral. Durante los últimos años, la asistencia ha sido consistentemente baja, incluso en actividades consideradas importantes para la cooperativa.</p><p>Nadie dentro del comité se sorprende por la situación. Todos conocen las dificultades de horario, disponibilidad y participación que enfrentan los afiliados. Aun así, el POA debe ejecutarse, los recursos destinados a educación deben utilizarse y la cooperativa sigue teniendo la responsabilidad de promover la formación de sus afiliados.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="7">
+        <div class="ranking-item pos-1" data-eje="F"><span class="ranking-pos">1</span><span class="ranking-texto">Que la cooperativa continúe realizando actividades sin lograr una participación que justifique el esfuerzo invertido.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="A"><span class="ranking-pos">2</span><span class="ranking-texto">Que la organización no esté encontrando nuevas formas de acercar la educación cooperativa a la realidad de sus afiliados.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="R"><span class="ranking-pos">3</span><span class="ranking-texto">Que las limitaciones actuales estén dificultando el cumplimiento efectivo del propósito educativo que la cooperativa busca alcanzar.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="O"><span class="ranking-pos">4</span><span class="ranking-texto">Que el tema se haya vuelto tan habitual que se termine aceptando la baja participación como algo normal e inevitable.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div class="item-title">
-⚖️ Buscador Legal
-</div>
+    <!-- CASO 8 -->
+    <div class="pulso-card" data-caso="8">
+      <div class="pulso-num">Caso 08 · Distribución</div>
+      <h2 class="pulso-titulo">Los excedentes que no convencen</h2>
+      <div class="pulso-sit"><p>La cooperativa cerró el año con buenos resultados y la distribución de excedentes fue aprobada conforme a los procedimientos establecidos. Sin embargo, después de la asamblea varios afiliados/as expresan inconformidad. No cuestionan el monto distribuido, sino la forma en que se definieron los criterios para asignarlo. Algunas personas consideran que ciertos grupos resultaron más favorecidos que otros.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="8">
+        <div class="ranking-item pos-1" data-eje="O"><span class="ranking-pos">1</span><span class="ranking-texto">Que los criterios utilizados para distribuir los excedentes no estén siendo comprendidos de la misma manera por todos los afiliados/as.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="A"><span class="ranking-pos">2</span><span class="ranking-texto">Que este tipo de situaciones termine debilitando el sentido de pertenencia y participación de quienes más se involucran en la vida cooperativa.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="R"><span class="ranking-pos">3</span><span class="ranking-texto">Que los afiliados/as no sientan que sus perspectivas fueron consideradas antes de definir los criterios de distribución.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="F"><span class="ranking-pos">4</span><span class="ranking-texto">Que una decisión formalmente correcta esté generando percepciones de injusticia dentro de la cooperativa.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div class="item-desc">
-Workspace legal interactivo.
-</div>
+    <!-- CASO 9 -->
+    <div class="pulso-card" data-caso="9">
+      <div class="pulso-num">Caso 09 · Liderazgo nuevo</div>
+      <h2 class="pulso-titulo">El candidato que promete impulsar cambios</h2>
+      <div class="pulso-sit"><p>En los últimos años, la cooperativa ha enfrentado dificultades para mejorar algunos de sus resultados institucionales. En este contexto, un afiliado/a con experiencia gerencial en otras organizaciones se postula para un cargo en la Junta Directiva.</p><p>Tiene reputación de ser una persona orientada a resultados, con capacidad para impulsar cambios y una visión clara sobre cómo fortalecer el trabajo entre la JD y la gerencia. Muchos delegados/as consideran que podría aportar nuevas perspectivas para enfrentar los retos actuales.</p><p>En la Junta de Vigilancia surge una preocupación que no todos comparten. Algunos de sus miembros observan que muchos delegados/as parecen sentirse atraídos por la experiencia empresarial del candidato/a y por la posibilidad de obtener mejores resultados. Les inquieta que la discusión se esté centrando más en lo que hizo fuera de la cooperativa que en cómo entiende el papel de los afiliados/as, la gestión democrática y los principios que distinguen a una cooperativa de cualquier otra organización.</p></div>
+      <div class="pulso-pregunta">Al momento de valorar esta candidatura, ¿qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="9">
+        <div class="ranking-item pos-1" data-eje="R"><span class="ranking-pos">1</span><span class="ranking-texto">Que los delegados/as estén dando más peso a la experiencia profesional del candidato/a que a su comprensión del modelo cooperativo.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="F"><span class="ranking-pos">2</span><span class="ranking-texto">Que las expectativas depositadas en una sola persona terminen siendo mayores de lo que cualquier directivo puede lograr desde su cargo.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="A"><span class="ranking-pos">3</span><span class="ranking-texto">Que se esté planteando una elección entre obtener mejores resultados y fortalecer el modelo cooperativo, cuando la cooperativa necesita ambas cosas.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="O"><span class="ranking-pos">4</span><span class="ranking-texto">Que la cooperativa no esté encontrando una forma de integrar nuevas perspectivas de liderazgo dentro de su propia identidad institucional.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-</div>
+    <!-- CASO 10 -->
+    <div class="pulso-card" data-caso="10">
+      <div class="pulso-num">Caso 10 · Participación</div>
+      <h2 class="pulso-titulo">Los jóvenes que quieren hacerse escuchar</h2>
+      <div class="pulso-sit"><p>Durante la Asamblea General se presenta el presupuesto anual. Cuando llega el momento de discutir los recursos destinados a educación y juventud, un grupo de afiliados/as jóvenes comienza a intervenir con frecuencia. Cuestionan algunos montos, plantean nuevas actividades y expresan su inconformidad con varias decisiones tomadas durante el año.</p><p>Sus intervenciones reflejan interés genuino por participar, pero algunos dirigentes observan que varias de sus propuestas desconocen limitaciones normativas, presupuestarias y operativas que la cooperativa debe considerar al momento de tomar decisiones.</p></div>
+      <div class="pulso-pregunta">¿Qué es lo que más te preocupa?</div>
+      <div class="pulso-hint">Arrastrá para ordenar · 1 = lo más urgente para vos</div>
+      <div class="ranking-lista" data-caso="10">
+        <div class="ranking-item pos-1" data-eje="O"><span class="ranking-pos">1</span><span class="ranking-texto">Que la cooperativa no haya encontrado espacios adecuados para formar y preparar a nuevos liderazgos antes de que lleguen estos debates.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-2" data-eje="A"><span class="ranking-pos">2</span><span class="ranking-texto">Que una situación como esta genere frustración tanto en quienes quieren impulsar cambios como en quienes tienen la responsabilidad de tomar decisiones.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-3" data-eje="F"><span class="ranking-pos">3</span><span class="ranking-texto">Que los jóvenes estén participando sin contar todavía con información suficiente para comprender todas las implicaciones de los temas que están cuestionando.</span><span class="ranking-handle">⠿</span></div>
+        <div class="ranking-item pos-4" data-eje="R"><span class="ranking-pos">4</span><span class="ranking-texto">Que la necesidad de mantener el orden y avanzar en la agenda termine limitando la participación de personas que desean involucrarse más activamente.</span><span class="ranking-handle">⠿</span></div>
+      </div>
+    </div>
 
-<div
-class="item"
-onclick="loadArtifact('artifacts/legal/asambleas.html', this)"
->
+    <div class="caso-nav" id="caso-nav">
+      <button class="btn-nav btn-ant" id="btn-ant" disabled>← Anterior</button>
+      <span class="caso-nav-txt" id="caso-nav-txt">1 de 10</span>
+      <button class="btn-nav btn-sig" id="btn-sig">Siguiente →</button>
+    </div>
+    <div class="ver-resultados-wrap" id="ver-wrap" style="display:none;">
+      <p class="ver-resultados-hint" id="ver-hint">Todos los casos respondidos</p>
+      <button class="btn-ver" id="btn-ver-resultados">Ver mis Pulsos →</button>
+    </div>
 
-<div class="item-title">
-🏛 Asambleas
-</div>
+  </div>
+</section>
 
-<div class="item-desc">
-Convocatorias y quórum.
-</div>
+<!-- RESULTADOS -->
+<section class="pantalla" id="p-resultados">
+  <div class="res-wrap">
+    <div class="res-eyebrow">Tu perfil de lectura institucional</div>
+    <h2 class="res-titulo">Pulsos</h2>
+    <p class="res-sub">Así tiende tu lectura del liderazgo cooperativista.<br>No hay un perfil correcto — hay zonas que seguir explorando.</p>
 
-</div>
+    <div class="radar-wrap">
+      <svg id="radar-svg" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;">
+        <defs>
+          <radialGradient id="rg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style="stop-color:#1c6b4a;stop-opacity:0.18"/>
+            <stop offset="100%" style="stop-color:#1c6b4a;stop-opacity:0.04"/>
+          </radialGradient>
+        </defs>
+        <circle cx="180" cy="180" r="130" fill="none" stroke="#e0ddd4" stroke-width="0.75"/>
+        <circle cx="180" cy="180" r="97"  fill="none" stroke="#e0ddd4" stroke-width="0.75" stroke-dasharray="2,4"/>
+        <circle cx="180" cy="180" r="65"  fill="none" stroke="#e0ddd4" stroke-width="0.75" stroke-dasharray="2,4"/>
+        <circle cx="180" cy="180" r="32"  fill="none" stroke="#e0ddd4" stroke-width="0.75" stroke-dasharray="2,4"/>
+        <line x1="180" y1="50"  x2="180" y2="310" stroke="#d8d5cc" stroke-width="0.75"/>
+        <line x1="50"  y1="180" x2="310" y2="180" stroke="#d8d5cc" stroke-width="0.75"/>
+        <polygon id="radar-media" points="180,115 245,180 180,245 115,180" fill="rgba(180,170,150,0.06)" stroke="#c8c4b8" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <polygon id="radar-data"  points="180,180 180,180 180,180 180,180" fill="url(#rg)" stroke="#1c6b4a" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle id="dot-F" cx="180" cy="180" r="5" fill="#1c6b4a" stroke="white" stroke-width="2"/>
+        <circle id="dot-O" cx="180" cy="180" r="5" fill="#2d5a8a" stroke="white" stroke-width="2"/>
+        <circle id="dot-R" cx="180" cy="180" r="5" fill="#8a4a2d" stroke="white" stroke-width="2"/>
+        <circle id="dot-A" cx="180" cy="180" r="5" fill="#6b4a1c" stroke="white" stroke-width="2"/>
+        <text x="180" y="30"  text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" font-weight="500" fill="#1c6b4a">F</text>
+        <text x="180" y="44"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" font-weight="500" fill="#8a8a80" letter-spacing="0.08em">FORMATIVO</text>
+        <text x="334" y="175" text-anchor="start"  font-family="Cormorant Garamond,serif" font-size="18" font-weight="500" fill="#2d5a8a">O</text>
+        <text x="334" y="187" text-anchor="start"  font-family="DM Sans,sans-serif" font-size="9" font-weight="500" fill="#8a8a80" letter-spacing="0.08em">ORGAN.</text>
+        <text x="180" y="334" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" font-weight="500" fill="#8a4a2d">R</text>
+        <text x="180" y="347" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" font-weight="500" fill="#8a8a80" letter-spacing="0.08em">RELACIONAL</text>
+        <text x="26"  y="175" text-anchor="end"    font-family="Cormorant Garamond,serif" font-size="18" font-weight="500" fill="#6b4a1c">A</text>
+        <text x="26"  y="187" text-anchor="end"    font-family="DM Sans,sans-serif" font-size="9" font-weight="500" fill="#8a8a80" letter-spacing="0.08em">ADAPT.</text>
+      </svg>
+    </div>
 
-<div
-class="item"
-onclick="loadArtifact('artifacts/legal/excedentes.html', this)"
->
+    <div class="dims-grid" id="dims-grid"></div>
 
-<div class="item-title">
-💰 Excedentes
-</div>
+    <div class="tensiones-bloque">
+      <div class="tensiones-titulo">Tensiones de lectura</div>
+      <p class="tensiones-sub">El punto muestra hacia dónde tiende tu lectura en cada par. La línea central es el equilibrio.</p>
+      <div id="tensiones-div"></div>
+    </div>
 
-<div class="item-desc">
-Reservas y distribución.
-</div>
+    <div class="perfil-bloque" id="perfil-bloque"></div>
 
-</div>
+    <!-- MANUAL DE INTERPRETACIÓN -->
+    <div class="manual-bloque">
+      <div class="manual-titulo">Cómo leer tu resultado</div>
+      <div class="manual-dim">
+        <div class="manual-dim-nombre">F · Formativo</div>
+        <div class="manual-dim-desc">Tendés a leer los problemas desde la norma, el conocimiento y la formación. Tu primer instinto es preguntar: ¿quién no sabe lo que debería saber? ¿qué dice la ley o el estatuto? Es una lectura sólida para garantizar que las decisiones sean legítimas y fundamentadas.</div>
+      </div>
+      <div class="manual-dim">
+        <div class="manual-dim-nombre">O · Organizacional</div>
+        <div class="manual-dim-desc">Tendés a leer los problemas desde los procesos y las estructuras. Tu primer instinto es preguntar: ¿qué sistema falló? ¿qué protocolo falta? ¿quién debería estar haciendo qué? Es una lectura poderosa para diseñar organizaciones que funcionen sin depender de personas específicas.</div>
+      </div>
+      <div class="manual-dim">
+        <div class="manual-dim-nombre">R · Relacional</div>
+        <div class="manual-dim-desc">Tendés a leer los problemas desde las personas y los vínculos. Tu primer instinto es preguntar: ¿cómo se siente la gente? ¿dónde está la desconfianza? ¿qué dinámicas humanas están en juego? Es una lectura esencial para sostener organizaciones donde la confianza es el activo más frágil.</div>
+      </div>
+      <div class="manual-dim">
+        <div class="manual-dim-nombre">A · Adaptativo</div>
+        <div class="manual-dim-desc">Tendés a leer los problemas desde el cambio y la capacidad sistémica. Tu primer instinto es preguntar: ¿la organización puede moverse? ¿qué está frenando la transformación? Es una lectura estratégica para anticipar problemas antes de que escalen.</div>
+      </div>
+      <div class="manual-tensiones">
+        <div class="manual-ten-titulo">Las 5 tensiones</div>
+        <div class="manual-ten-item"><strong>Norma · Vínculo</strong> — ¿El problema es que no conocen la ley o que hay ruptura de confianza?</div>
+        <div class="manual-ten-item"><strong>Diseño · Cultura</strong> — ¿El fallo está en cómo está diseñado el proceso o en cómo se vive dentro de la organización?</div>
+        <div class="manual-ten-item"><strong>Continuidad · Transformación</strong> — ¿La cooperativa necesita consolidar lo que tiene o romper con lo que la frena?</div>
+        <div class="manual-ten-item"><strong>Certeza · Apertura</strong> — ¿La solución está en aplicar lo establecido o en construir algo que aún no existe?</div>
+        <div class="manual-ten-item"><strong>Pertenencia · Movimiento</strong> — ¿Hay que proteger los vínculos existentes o movilizar a las personas hacia algo distinto?</div>
+      </div>
+    </div>
 
-</div>
-
-</div>
-
-</aside>
-
-<!-- VIEWER -->
-
-<main class="viewer">
-
-<iframe
-id="viewer"
-src="artifacts/legal/legal-workspace-v2.html">
-</iframe>
-
-</main>
+    <p class="nota-final">Pulsos es una herramienta de reflexión, no un test de rendimiento. Todos los perfiles son válidos — lo valioso es reconocer cuáles dimensiones explorás menos naturalmente.</p>
+    <button class="btn-reiniciar" id="btn-reiniciar">Volver a empezar</button>
+    <button class="btn-modulo" id="btn-modulo">← Volver al módulo</button>
+  </div>
+</section>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
 
-function loadArtifact(path,el){
+  var EJES = ['F','O','R','A'];
+  var MAX_CASOS = 10;
+  var CX = 180, CY = 180, RMAX = 130;
+  var rankings = {};
+  var casoActual = 1;
 
-document
-.querySelectorAll('.item')
-.forEach(x=>x.classList.remove('active'));
+  function puntosPos(pos) { return 5 - pos; }
 
-el.classList.add('active');
+  function calcScores() {
+    var s = { F:0, O:0, R:0, A:0 };
+    Object.keys(rankings).forEach(function(caso) {
+      rankings[caso].forEach(function(item) {
+        s[item.eje] += puntosPos(item.pos);
+      });
+    });
+    return s;
+  }
 
-document
-.getElementById('viewer')
-.src = path;
+  // ── NAVEGACIÓN POR CASOS ─────────────────────────────────────────────────
+  function mostrarCaso(n) {
+    casoActual = n;
+    document.querySelectorAll('.pulso-card').forEach(function(c) { c.classList.remove('activo'); });
+    var card = document.querySelector('[data-caso="' + n + '"]');
+    if (card) card.classList.add('activo');
 
-}
+    document.getElementById('caso-nav-txt').textContent = n + ' de ' + MAX_CASOS;
+    document.getElementById('btn-ant').disabled = (n === 1);
+    document.getElementById('btn-sig').disabled = (n === MAX_CASOS);
 
+    document.getElementById('caso-nav').style.display = 'flex';
+    document.getElementById('ver-wrap').style.display = 'none';
+
+    if (n === MAX_CASOS) {
+      // Show ver-resultados only if all ranked
+      actualizarVerBtn();
+    }
+
+    window.scrollTo({ top: document.getElementById('p-casos').offsetTop || 0, behavior: 'smooth' });
+  }
+
+  function actualizarVerBtn() {
+    var respondidos = Object.keys(rankings).length;
+    var hint = document.getElementById('ver-hint');
+    var btn = document.getElementById('btn-ver-resultados');
+
+    document.getElementById('prog-fill').style.width = Math.round((respondidos/MAX_CASOS)*100) + '%';
+    document.getElementById('prog-txt').textContent = respondidos + ' de ' + MAX_CASOS;
+
+    if (casoActual === MAX_CASOS) {
+      document.getElementById('caso-nav').style.display = 'none';
+      document.getElementById('ver-wrap').style.display = 'block';
+      if (respondidos < MAX_CASOS) {
+        var falt = MAX_CASOS - respondidos;
+        hint.textContent = 'Aún te faltan ' + falt + ' caso' + (falt===1?'':'s') + ' por ordenar — podés volver atrás';
+        hint.style.color = '';
+        hint.style.fontStyle = 'italic';
+        btn.disabled = true;
+        btn.style.background = '';
+      } else {
+        hint.textContent = 'Todos los casos ordenados ✓';
+        hint.style.color = 'var(--verde)';
+        hint.style.fontStyle = 'normal';
+        hint.style.fontWeight = '500';
+        btn.disabled = false;
+      }
+    }
+  }
+
+  document.getElementById('btn-sig').addEventListener('click', function() {
+    if (casoActual < MAX_CASOS) mostrarCaso(casoActual + 1);
+  });
+
+  document.getElementById('btn-ant').addEventListener('click', function() {
+    if (casoActual > 1) mostrarCaso(casoActual - 1);
+  });
+
+  // ── DRAG FROM HANDLE ONLY ────────────────────────────────────────────────
+  var dragSrc = null;
+
+  function updatePositions(lista) {
+    lista.querySelectorAll('.ranking-item').forEach(function(item, idx) {
+      var pos = idx + 1;
+      item.querySelector('.ranking-pos').textContent = pos;
+      item.className = 'ranking-item pos-' + pos;
+    });
+  }
+
+  function saveRanking(lista) {
+    var caso = lista.getAttribute('data-caso');
+    rankings[caso] = [];
+    lista.querySelectorAll('.ranking-item').forEach(function(item, idx) {
+      rankings[caso].push({ eje: item.getAttribute('data-eje'), pos: idx + 1 });
+    });
+    actualizarVerBtn();
+  }
+
+  document.querySelectorAll('.ranking-lista').forEach(function(lista) {
+
+    // Mouse drag — initiated from handle
+    lista.addEventListener('dragstart', function(e) {
+      var handle = e.target.closest('.ranking-handle');
+      if (!handle) { e.preventDefault(); return; }
+      dragSrc = handle.closest('.ranking-item');
+      dragSrc.setAttribute('draggable', true);
+      dragSrc.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    lista.addEventListener('dragend', function(e) {
+      if (dragSrc) {
+        dragSrc.classList.remove('dragging');
+        dragSrc.removeAttribute('draggable');
+        dragSrc = null;
+      }
+      lista.querySelectorAll('.ranking-item').forEach(function(i) { i.classList.remove('drag-over'); });
+      updatePositions(lista);
+      saveRanking(lista);
+    });
+
+    lista.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (!dragSrc) return;
+      var target = e.target.closest('.ranking-item');
+      if (!target || target === dragSrc) return;
+      lista.querySelectorAll('.ranking-item').forEach(function(i) { i.classList.remove('drag-over'); });
+      target.classList.add('drag-over');
+    });
+
+    lista.addEventListener('drop', function(e) {
+      e.preventDefault();
+      var target = e.target.closest('.ranking-item');
+      if (!target || target === dragSrc || !dragSrc) return;
+      var items = Array.from(lista.querySelectorAll('.ranking-item'));
+      var srcIdx = items.indexOf(dragSrc);
+      var tgtIdx = items.indexOf(target);
+      if (srcIdx < tgtIdx) {
+        lista.insertBefore(dragSrc, target.nextSibling);
+      } else {
+        lista.insertBefore(dragSrc, target);
+      }
+    });
+
+    // Touch drag — initiated from handle only
+    var touchItem = null;
+
+    lista.addEventListener('touchstart', function(e) {
+      var handle = e.target.closest('.ranking-handle');
+      if (!handle) return;
+      touchItem = handle.closest('.ranking-item');
+      touchItem.classList.add('dragging');
+    }, { passive: true });
+
+    lista.addEventListener('touchmove', function(e) {
+      if (!touchItem) return;
+      e.preventDefault();
+      var y = e.touches[0].clientY;
+      var items = Array.from(lista.querySelectorAll('.ranking-item:not(.dragging)'));
+      var after = items.find(function(item) {
+        var box = item.getBoundingClientRect();
+        return y < box.top + box.height / 2;
+      });
+      if (after) { lista.insertBefore(touchItem, after); }
+      else { lista.appendChild(touchItem); }
+    }, { passive: false });
+
+    lista.addEventListener('touchend', function() {
+      if (!touchItem) return;
+      touchItem.classList.remove('dragging');
+      updatePositions(lista);
+      saveRanking(lista);
+      touchItem = null;
+    }, { passive: true });
+  });
+
+  // ── INICIAR ───────────────────────────────────────────────────────────────
+  document.getElementById('btn-iniciar').addEventListener('click', function() {
+    mostrar('p-casos');
+    mostrarCaso(1);
+  });
+
+  function mostrar(id) {
+    document.querySelectorAll('.pantalla').forEach(function(p) { p.classList.remove('activa'); });
+    var el = document.getElementById(id);
+    if (el) el.classList.add('activa');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── VER RESULTADOS ────────────────────────────────────────────────────────
+  document.getElementById('btn-ver-resultados').addEventListener('click', function() {
+    generarResultados();
+    mostrar('p-resultados');
+  });
+
+  // ── REINICIAR ─────────────────────────────────────────────────────────────
+  document.getElementById('btn-reiniciar').addEventListener('click', function() {
+    rankings = {};
+    casoActual = 1;
+    document.querySelectorAll('.ranking-lista').forEach(function(lista) {
+      lista.querySelectorAll('.ranking-item').forEach(function(item, idx) {
+        item.querySelector('.ranking-pos').textContent = idx+1;
+        item.className = 'ranking-item pos-'+(idx+1);
+        item.removeAttribute('draggable');
+      });
+    });
+    document.getElementById('prog-fill').style.width = '0%';
+    document.getElementById('prog-txt').textContent = '0 de 10';
+    mostrar('p-portada');
+  });
+
+  document.getElementById('btn-modulo').addEventListener('click', function() {
+    window.location.href = 'PG001_Liderazgo_Cooperativista.html';
+  });
+
+  // ── GENERAR RESULTADOS ────────────────────────────────────────────────────
+  function generarResultados() {
+    var scores = calcScores();
+    var total = scores.F + scores.O + scores.R + scores.A;
+    var MAX_SCORE = MAX_CASOS * 4;
+
+    function puntoRadar(eje, idx) {
+      var val = scores[eje];
+      var minR = 20;
+      var r = minR + (val / MAX_SCORE) * (RMAX - minR) * 2.8;
+      r = Math.min(r, RMAX);
+      var ang = ([-90,0,90,180][idx]) * Math.PI / 180;
+      return { x: CX + r * Math.cos(ang), y: CY + r * Math.sin(ang) };
+    }
+
+    var pts = [puntoRadar('F',0),puntoRadar('O',1),puntoRadar('R',2),puntoRadar('A',3)];
+    var t0 = null;
+    function lerp(a,b,t){ return a+(b-a)*t; }
+    function ease(t){ return 1-Math.pow(1-t,3); }
+    function anim(ts) {
+      if (!t0) t0 = ts;
+      var t = ease(Math.min((ts-t0)/900,1));
+      var ap = pts.map(function(p,i){ return {x:lerp(CX,p.x,t),y:lerp(CY,p.y,t)}; });
+      document.getElementById('radar-data').setAttribute('points',ap.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' '));
+      ['dot-F','dot-O','dot-R','dot-A'].forEach(function(id,i){
+        var d=document.getElementById(id);
+        if(d){d.setAttribute('cx',ap[i].x.toFixed(1));d.setAttribute('cy',ap[i].y.toFixed(1));}
+      });
+      if((ts-t0)<900) requestAnimationFrame(anim);
+    }
+    requestAnimationFrame(anim);
+    var mR=65;
+    document.getElementById('radar-media').setAttribute('points',[[CX,CY-mR],[CX+mR,CY],[CX,CY+mR],[CX-mR,CY]].map(function(p){return p[0]+','+p[1];}).join(' '));
+
+    var nombres={F:'Formativo',O:'Organizacional',R:'Relacional',A:'Adaptativo'};
+    var interps={
+      F:{alto:'Tu lectura tiende a identificar con claridad los vacíos normativos y formativos. Reconocés cuándo el problema tiene raíz en el desconocimiento de la norma o en la ausencia de formación. Una fortaleza crítica para garantizar que las decisiones sean legítimas.',
+         medio:'Tu lectura incorpora la dimensión formativa de forma equilibrada — reconocés cuándo la norma es relevante sin hacerla el único lente de análisis.',
+         bajo:'Tu lectura tiende a subvalorar los factores normativos. Algunos problemas que identificás pueden tener raíz en vacíos de conocimiento legal o formativo.'},
+      O:{alto:'Tenés sensibilidad aguda para detectar fallas estructurales — procesos mal diseñados, roles ambiguos, sistemas que no funcionan sin personas específicas. Una lectura poderosa para construir organizaciones resilientes.',
+         medio:'Tu lectura incorpora la dimensión organizacional sin que domine tu análisis. Reconocés las fallas estructurales cuando son relevantes.',
+         bajo:'Tu lectura tiende a subvalorar las causas organizacionales. Algunos conflictos pueden tener origen en estructuras mal diseñadas, no solo en personas.'},
+      R:{alto:'Tu lectura es especialmente sensible a las dinámicas humanas — confianza, pertenencia, desconexión emocional. Una fortaleza central para sostener organizaciones donde los vínculos son el activo más frágil.',
+         medio:'Incorporás la dimensión relacional de forma equilibrada. Reconocés el factor humano sin que absorba todo el análisis.',
+         bajo:'Tu lectura tiende a subvalorar los factores humanos. Prestar más atención a cómo se sienten las personas puede enriquecer significativamente tu diagnóstico.'},
+      A:{alto:'Tu lectura identifica con facilidad los desafíos de adaptación y cambio sistémico. Tenés sensibilidad para detectar cuándo la rigidez organizacional está frenando la evolución.',
+         medio:'Tu lectura incorpora la dimensión adaptativa de forma balanceada — reconocés cuándo el cambio es el núcleo del problema.',
+         bajo:'Tu lectura tiende a subvalorar los factores de cambio. Explorar más esta dimensión puede ampliar tu capacidad de anticipar problemas antes de que escalen.'}
+    };
+
+    var grid=document.getElementById('dims-grid');
+    grid.innerHTML='';
+    var mediaVal=total/4;
+    EJES.forEach(function(eje){
+      var val=scores[eje];
+      var pct=Math.min(Math.round((val/MAX_SCORE)*100*4),100);
+      var nivel=val>=mediaVal*1.2?'alto':val>=mediaVal*0.8?'medio':'bajo';
+      var d=document.createElement('div');
+      d.className='dim-card '+eje;
+      d.innerHTML='<div class="dim-head"><span class="dim-letra">'+eje+'</span><span class="dim-nombre">'+nombres[eje]+'</span></div>'
+        +'<div class="dim-barra"><div class="dim-fill" style="width:'+pct+'%"></div><div class="dim-media" style="left:50%"></div></div>'
+        +'<div class="dim-nums"><span>'+val+' pts</span><span style="color:#c0c0b0">media: '+mediaVal.toFixed(1)+'</span></div>'
+        +'<div class="dim-interp">'+interps[eje][nivel]+'</div>';
+      grid.appendChild(d);
+    });
+
+    var tensiones=[
+      {izq:'Norma',      der:'Vínculo',       eI:'F',eD:'R'},
+      {izq:'Diseño',     der:'Cultura',        eI:'O',eD:'R'},
+      {izq:'Continuidad',der:'Transformación', eI:'O',eD:'A'},
+      {izq:'Certeza',    der:'Apertura',       eI:'F',eD:'A'},
+      {izq:'Pertenencia',der:'Movimiento',     eI:'R',eD:'A'}
+    ];
+    var tDiv=document.getElementById('tensiones-div');
+    tDiv.innerHTML='';
+    tensiones.forEach(function(t){
+      var vi=scores[t.eI],vd=scores[t.eD];
+      var pos=(vi+vd===0)?50:Math.round((vd/(vi+vd))*100);
+      var row=document.createElement('div');
+      row.className='tension-fila';
+      row.innerHTML='<span class="tension-polo">'+t.izq+'</span>'
+        +'<div class="tension-track"><div class="tension-mid"></div><div class="tension-dot" style="left:'+pos+'%"></div></div>'
+        +'<span class="tension-polo d">'+t.der+'</span>';
+      tDiv.appendChild(row);
+    });
+
+    var fuerte=EJES.reduce(function(a,b){return scores[a]>=scores[b]?a:b;});
+    var debil=EJES.reduce(function(a,b){return scores[a]<=scores[b]?a:b;});
+    var perfiles={F:'lector/a normativo institucional',O:'lector/a estructural y de procesos',R:'lector/a humano y relacional',A:'lector/a adaptativo y sistémico'};
+    var pb=document.getElementById('perfil-bloque');
+    pb.innerHTML='<div class="perfil-titulo">Tu perfil: '+perfiles[fuerte]+'</div>'
+      +'<div class="perfil-texto">Tu lectura de las situaciones de liderazgo tiende a centrarse en la dimensión <strong>'+nombres[fuerte]+'</strong>. Cuando algo falla, tu primer instinto es buscar causas ahí — lo cual es una fortaleza real y valiosa para el diagnóstico institucional.<br><br>'
+      +'La dimensión que aparece con menos énfasis es la <strong>'+nombres[debil]+'</strong>. No significa que la ignorés — significa que no es tu punto de entrada natural. Las situaciones más complejas suelen requerir leer desde múltiples dimensiones simultáneamente.<br><br>'
+      +'El objetivo de Pulsos no es que todas las dimensiones sean iguales — es que puedas <strong>elegir conscientemente</strong> desde cuál leer según el problema que enfrentás.</div>';
+  }
+
+});
 </script>
-
 </body>
 </html>
