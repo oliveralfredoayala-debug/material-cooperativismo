@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>CHC Notebook</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+:root{
+--bg:#f5f7f6;
+--sidebar:#ffffff;
+--line:#dce5de;
+--text:#17211b;
+--muted:#6a766e;
+--green:#176846;
+}
+
+html,
+body{
+width:100%;
+height:100%;
+overflow:hidden;
+font-family:'Inter',sans-serif;
+background:var(--bg);
+color:var(--text);
+}
+
+body{
+display:grid;
+grid-template-columns:280px 1fr;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+background:var(--sidebar);
+border-right:1px solid var(--line);
+padding:22px;
+display:flex;
+flex-direction:column;
+gap:24px;
+overflow-y:auto;
+}
+
+.logo{
+font-size:34px;
+}
+
+.title{
+font-size:30px;
+font-weight:800;
+line-height:1;
+color:#114730;
+}
+
+.subtitle{
+font-size:13px;
+line-height:1.7;
+color:var(--muted);
+margin-top:-10px;
+}
+
+.section-title{
+font-size:11px;
+font-weight:800;
+letter-spacing:.12em;
+text-transform:uppercase;
+color:#7a877e;
+margin-bottom:12px;
+}
+
+.group{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.item{
+padding:14px;
+border-radius:16px;
+border:1px solid transparent;
+cursor:pointer;
+transition:.15s ease;
+background:white;
+}
+
+.item:hover{
+background:#f7faf8;
+border-color:#d8e6dd;
+}
+
+.item.active{
+background:#edf7f1;
+border-color:#b9d8c6;
+}
+
+.item-title{
+font-size:14px;
+font-weight:700;
+margin-bottom:4px;
+}
+
+.item-desc{
+font-size:12px;
+line-height:1.6;
+color:var(--muted);
+}
+
+/* VIEWER */
+
+.viewer{
+width:100%;
+height:100vh;
+background:white;
+}
+
+iframe{
+width:100%;
+height:100%;
+border:none;
+background:white;
+}
+
+/* MOBILE */
+
+@media(max-width:1000px){
+
+body{
+grid-template-columns:1fr;
+}
+
+.sidebar{
+height:auto;
+border-right:none;
+border-bottom:1px solid var(--line);
+}
+
+.viewer{
+height:calc(100vh - 420px);
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+<div class="logo">
+🧠
+</div>
+
+<div class="title">
+CHC Notebook
+</div>
+
+<div class="subtitle">
+Sistema modular de aprendizaje cooperativo.
+</div>
+
+<!-- LEGAL -->
+
+<div>
+
+<div class="section-title">
+Legal
+</div>
+
+<div class="group">
+
+<div
+class="item active"
+onclick="loadArtifact('artifacts/legal/legal-workspace-v2.html', this)"
+>
+
+<div class="item-title">
+⚖️ Buscador Legal
+</div>
+
+<div class="item-desc">
+Workspace legal interactivo.
+</div>
+
+</div>
+
+<div
+class="item"
+onclick="loadArtifact('artifacts/legal/asambleas.html', this)"
+>
+
+<div class="item-title">
+🏛 Asambleas
+</div>
+
+<div class="item-desc">
+Convocatorias y quórum.
+</div>
+
+</div>
+
+<div
+class="item"
+onclick="loadArtifact('artifacts/legal/excedentes.html', this)"
+>
+
+<div class="item-title">
+💰 Excedentes
+</div>
+
+<div class="item-desc">
+Reservas y distribución.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+<!-- VIEWER -->
+
+<main class="viewer">
+
+<iframe
+id="viewer"
+src="artifacts/legal/legal-workspace-v2.html">
+</iframe>
+
+</main>
+
+<script>
+
+function loadArtifact(path,el){
+
+document
+.querySelectorAll('.item')
+.forEach(x=>x.classList.remove('active'));
+
+el.classList.add('active');
+
+document
+.getElementById('viewer')
+.src = path;
+
+}
+
+</script>
+
+</body>
+</html>
